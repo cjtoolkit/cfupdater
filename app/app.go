@@ -38,7 +38,7 @@ func Exec() {
 		os.Exit(0)
 	}
 
-	fmt.Println("Running Cloudflare Updater!")
+	fmt.Println("Running CfUpdater!")
 	ipv4, ipv6 := cf.Get()
 
 	if ipv6 != nil {
