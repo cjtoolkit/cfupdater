@@ -88,22 +88,28 @@ func (ob *Object) Run() {
 	buf := &bytes.Buffer{}
 	address := strings.TrimSpace(ob.Content)
 
-	dfmt.Println(address)
+	dfmt.Println("Current IP:", address)
 
 	for {
 		tempaddress := ""
 		var _editRes *editRes
+
 		dfmt.Println("Getting IP Adddress (", t, ") from", url_)
 		resp, err := http.DefaultClient.Get(url_)
 		if err != nil {
 			dfmt.Println(url_, ": Timed out")
 			goto sleep
 		}
+
 		io.Copy(buf, resp.Body)
 		resp.Body.Close()
+
 		tempaddress = strings.TrimSpace(buf.String())
+
 		buf.Reset()
+
 		dfmt.Println("IP Adddres pull from", url_, ":", tempaddress)
+
 		if tempaddress == address {
 			dfmt.Println("Current IP (", t, ") is up-to-date!")
 			goto sleep
@@ -142,6 +148,7 @@ func (ob *Object) Run() {
 		}
 
 		address = tempaddress
+
 	sleep:
 		time.Sleep(time.Duration(*settings.Hour) * time.Hour)
 	}
