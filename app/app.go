@@ -29,9 +29,13 @@ func Exec() {
 		fmt.Println("\tOther Options:")
 		fmt.Println()
 
-		for _, name := range [...]string{"ipv6", "hour", "debug"} {
+		for _, name := range [...]string{"ipv6", "hour", "timeout", "debug"} {
 			f := flag.Lookup(name)
-			fmt.Print("\t\t-", f.Name, "\t\t", f.Usage)
+			if f.Name == "timeout" {
+				fmt.Print("\t\t-", f.Name, "\t", f.Usage)
+			} else {
+				fmt.Print("\t\t-", f.Name, "\t\t", f.Usage)
+			}
 			fmt.Println()
 		}
 

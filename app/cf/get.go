@@ -13,6 +13,10 @@ import (
 	"github.com/cjtoolkit/cfupdater/app/settings"
 )
 
+func init() {
+	http.DefaultClient.Timeout = time.Duration(*settings.Timeout) * time.Second
+}
+
 func Get() (ipv4, ipv6 *Object) {
 	resp, err := http.DefaultClient.PostForm("https://www.cloudflare.com/api_json.html", url.Values{
 		"a":     {"rec_load_all"},
