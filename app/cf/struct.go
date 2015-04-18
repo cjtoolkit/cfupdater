@@ -1,4 +1,4 @@
-package recloadall
+package cf
 
 type recloadall struct {
 	Msg      *string   `json:"msg"`
