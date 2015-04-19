@@ -1,6 +1,6 @@
 # CJToolkit CfUpdater
 
-Dynamic IP Updater for Cloudflare DNS Records
+Dynamic IP Updater for CloudFlare DNS Records
 
 ## Installation
 
@@ -15,9 +15,9 @@ CJToolkit CfUpdater Usage:
 
         Mandatory Options:
 
-                -tkn            Cloudflare API Key
-                -email          Cloudflare Email
-                -z              Cloudflare Zone
+                -tkn            CloudFlare API Key
+                -email          CloudFlare Email
+                -z              CloudFlare Zone
                 -name           Search Domain Name in Records
 
         Other Options:

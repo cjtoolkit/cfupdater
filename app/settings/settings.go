@@ -5,9 +5,9 @@ import (
 )
 
 var (
-	Tkn   = flag.String("tkn", "", "Cloudflare API Key")
-	Email = flag.String("email", "", "Cloudflare Email")
-	Z     = flag.String("z", "", "Cloudflare Zone")
+	Tkn   = flag.String("tkn", "", "CloudFlare API Key")
+	Email = flag.String("email", "", "CloudFlare Email")
+	Z     = flag.String("z", "", "CloudFlare Zone")
 	Name  = flag.String("name", "", "Search Domain Name in Records")
 	Hour  = flag.Int64("hour", 2, "Run Every x Hours (2 Hours by Default)")
 
