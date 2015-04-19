@@ -18,7 +18,20 @@ func init() {
 }
 
 func Get() (ipv4, ipv6 *Object) {
-	resp, err := http.DefaultClient.PostForm("https://www.cloudflare.com/api_json.html", url.Values{
+	var rec *recloadall
+	name := *settings.Name
+	var err error
+	var resp *http.Response
+
+	goto first_run
+
+try_again:
+
+	time.Sleep(1 * time.Minute)
+
+first_run:
+
+	resp, err = http.DefaultClient.PostForm("https://www.cloudflare.com/api_json.html", url.Values{
 		"a":     {"rec_load_all"},
 		"tkn":   {*settings.Tkn},
 		"email": {*settings.Email},
@@ -26,16 +39,18 @@ func Get() (ipv4, ipv6 *Object) {
 	})
 
 	if err != nil {
-		panic(err)
+		dfmt.Println("API Timeout")
+		goto try_again
 	}
 
-	rec := &recloadall{}
+	rec = &recloadall{}
 
 	err = json.NewDecoder(resp.Body).Decode(rec)
 	resp.Body.Close()
 
 	if err != nil {
-		panic(err)
+		dfmt.Println("JSON Decoder Failed")
+		goto try_again
 	}
 
 	dfmt.Println("Result: ", rec.Result)
@@ -46,13 +61,12 @@ func Get() (ipv4, ipv6 *Object) {
 		if rec.Msg != nil {
 			str = *rec.Msg
 		}
-		panic("CFUpdater: rec_load_all failed. " + str)
+		dfmt.Println("API Request Failed: ", str)
+		goto try_again
 	}
 
 	dfmt.Println("Record: ", rec.Response.Record.Objects)
 	dfmt.Println()
-
-	name := *settings.Name
 
 	// Search IPv4
 
