@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -131,6 +132,11 @@ func (ob *Object) Run() {
 		tempaddress = strings.TrimSpace(buf.String())
 
 		buf.Reset()
+
+		if net.ParseIP(tempaddress) == nil {
+			dfmt.Println(tempaddress, "is not a valid IP Address")
+			goto sleep
+		}
 
 		dfmt.Println("IP Adddres pull from", url_, ":", tempaddress)
 
