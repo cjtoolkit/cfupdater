@@ -42,8 +42,14 @@ func Exec() {
 		os.Exit(0)
 	}
 
-	fmt.Println("Running CfUpdater!")
 	ipv4, ipv6 := cf.Get()
+
+	if ipv4 == nil && ipv6 == nil {
+		fmt.Println("Neither A or AAAA (if enabled) records were found!")
+		os.Exit(1)
+	}
+
+	fmt.Println("Running CfUpdater!")
 
 	if ipv6 != nil {
 		go ipv6.Run()
