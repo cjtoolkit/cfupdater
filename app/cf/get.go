@@ -3,9 +3,11 @@ package cf
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -23,9 +25,17 @@ func Get() (ipv4, ipv6 *Object) {
 	var err error
 	var resp *http.Response
 
+	attemp := uint8(0)
+
 	goto first_run
 
 try_again:
+
+	attemp++
+	if attemp >= 3 {
+		fmt.Fprint(os.Stderr, "Failed after 3 attemps")
+		os.Exit(1)
+	}
 
 	time.Sleep(1 * time.Minute)
 
