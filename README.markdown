@@ -22,7 +22,6 @@ CJToolkit CfUpdater Usage:
 
         Other Options:
 
-                -ipv6           Enable IPv6 (AAAA) (Disabled by Default)
                 -hour           Run Every x Hours (2 Hours by Default)
                 -timeout        Specify API Timeout in Second (Default: 30)
                 -debug          Enable Debug Mode (Disabled by Default)

@@ -78,7 +78,7 @@ first_run:
 	dfmt.Println("Record: ", rec.Response.Record.Objects)
 	dfmt.Println()
 
-	// Search IPv4
+	// Search A
 
 	for _, object := range rec.Response.Record.Objects {
 		dfmt.Println(object)
@@ -88,11 +88,7 @@ first_run:
 		}
 	}
 
-	if !*settings.IPv6 {
-		return
-	}
-
-	// Search IPv6
+	// Search AAAA
 
 	for _, object := range rec.Response.Record.Objects {
 		dfmt.Println(object)

@@ -29,7 +29,7 @@ func Exec() {
 		fmt.Println("\tOther Options:")
 		fmt.Println()
 
-		for _, name := range [...]string{"ipv6", "hour", "timeout", "debug"} {
+		for _, name := range [...]string{"hour", "timeout", "debug"} {
 			f := flag.Lookup(name)
 			if f.Name == "timeout" {
 				fmt.Print("\t\t-", f.Name, "\t", f.Usage)
@@ -60,7 +60,7 @@ func Exec() {
 		ipv4.Run()
 
 	default:
-		fmt.Println("Neither A or AAAA (if enabled) records were found!")
+		fmt.Println("Neither A or AAAA records were found!")
 		os.Exit(1)
 
 	}
