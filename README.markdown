@@ -30,6 +30,8 @@ CJToolkit CfUpdater Usage:
 ## Example
 
 ~~~ sh
+#!/bin/zsh
+
 cfupdater \
 	-tkn	"API Key Here" \
 	-email	"email@exmaple.com" \
