@@ -5,6 +5,10 @@ import (
 	"net/http"
 )
 
+/*
+For:
+	*Client in "net/http"
+*/
 type httpClientInterface interface {
 	Do(req *http.Request) (resp *http.Response, err error)
 	Get(url string) (resp *http.Response, err error)

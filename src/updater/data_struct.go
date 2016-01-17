@@ -26,3 +26,12 @@ type Object struct {
 type editRes struct {
 	Result string `json:"result"`
 }
+
+type Parameters struct {
+	tkn     string
+	email   string
+	z       string
+	name    string
+	timeout int64
+	hour    int64
+}
