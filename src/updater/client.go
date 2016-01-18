@@ -25,16 +25,16 @@ type client struct {
 
 	httpClient httpClientInterface
 	url        string
-	parameters Parameters
+	data       data
 	logger     loggerInterface
 }
 
 func (c *client) getObjects() (ipv4, ipv6 *Object) {
 	resp, err := c.httpClient.PostForm(c.url, url.Values{
 		"a":     {"rec_load_all"},
-		"tkn":   {c.parameters.tkn},
-		"email": {c.parameters.email},
-		"z":     {c.parameters.z},
+		"tkn":   {c.data.tkn},
+		"email": {c.data.email},
+		"z":     {c.data.z},
 	})
 
 	if err != nil {
@@ -62,14 +62,14 @@ func (c *client) getObjects() (ipv4, ipv6 *Object) {
 	}
 
 	for _, object := range rec.Response.Record.Objects {
-		if object.Type == "A" && object.Name == c.parameters.name {
+		if object.Type == "A" && object.Name == c.data.name {
 			ipv4 = object
 			break
 		}
 	}
 
 	for _, object := range rec.Response.Record.Objects {
-		if object.Type == "AAAA" && object.Name == c.parameters.name {
+		if object.Type == "AAAA" && object.Name == c.data.name {
 			ipv6 = object
 			break
 		}
@@ -94,13 +94,11 @@ func (c *client) getUrlAndType(ob *Object) (url, _type string) {
 		url = URL_IPV6
 		_type = "ipv6"
 	}
+	return
 }
 
-func (c *client) runOn(
+func (c client) runOn(
 	ob *Object,
-	cfurl string,
-	parameters Parameters,
-	logger loggerInterface,
 	ipurl string,
 	iptype string,
 	address *string,
@@ -124,17 +122,17 @@ func (c *client) runOn(
 		return
 	}
 
-	resp, err = c.httpClient.PostForm(cfurl, url.Values{
+	resp, err = c.httpClient.PostForm(c.url, url.Values{
 		"a":            {"rec_edit"},
-		"z":            {*parameters.z},
+		"z":            {c.data.z},
 		"type":         {ob.Type},
 		"id":           {ob.Id},
 		"name":         {ob.Name},
 		"content":      {ob.Content},
 		"ttl":          {ob.Ttl},
 		"service_mode": {ob.ServiceMode},
-		"email":        {parameters.email},
-		"tkn":          {parameters.tkn},
+		"email":        {c.data.email},
+		"tkn":          {c.data.tkn},
 	})
 
 	if err != nil {
@@ -160,16 +158,14 @@ func (c *client) runOn(
 
 func (c *client) RunOn(ob *Object) {
 	c.Lock()
-	cfurl := c.url
-	parameters := c.parameters
-	logger := c.logger
+	cs := *c
 	c.Unlock()
 
 	ipurl, iptype := c.getUrlAndType(ob)
 	address := strings.TrimSpace(ob.Content)
 
 	for {
-		c.runOn(ob, cfurl, parameters, logger, ipurl, iptype, &address)
-		time.Sleep(time.Duration(parameters.hour) * time.Hour)
+		cs.runOn(ob, ipurl, iptype, &address)
+		time.Sleep(time.Duration(data.hour) * time.Hour)
 	}
 }

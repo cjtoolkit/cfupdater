@@ -27,7 +27,7 @@ type editRes struct {
 	Result string `json:"result"`
 }
 
-type Parameters struct {
+type data struct {
 	tkn     string
 	email   string
 	z       string

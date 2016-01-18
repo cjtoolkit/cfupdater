@@ -7,12 +7,11 @@ import (
 
 /*
 Implements:
-	updaterInterface
+	UpdaterInterface
 */
 type Updater struct {
-	parameters Parameters
-	client     clientInterface
-	logger     loggerInterface
+	client clientInterface
+	logger loggerInterface
 }
 
 func (u *Updater) ExecuteUpdater() {

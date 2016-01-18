@@ -12,26 +12,25 @@ const (
 	HOUR    = int64(2)
 )
 
-func GetParameters() *Parameters {
-	return &Parameters{
+func getData() *data {
+	return &data{
 		timeout: TIMEOUT,
 		hour:    HOUR,
 	}
 }
 
-func getClientService(parameters *Parameters, logger *log.Logger) *client {
+func getClientService(data *data, logger *log.Logger) *client {
 	return &client{
-		httpClient: &http.Client{Timeout: time.Duration(parameters.timeout) * time.Second},
+		httpClient: &http.Client{Timeout: time.Duration(data.timeout) * time.Second},
 		url:        API_URL,
-		parameters: *parameters,
+		data:       *data,
 		logger:     logger,
 	}
 }
 
-func GetUpdater(parameters *Parameters, logger *log.Logger) *Updater {
+func GetUpdater(data *data, logger *log.Logger) *Updater {
 	return &Updater{
-		parameters: *parameters,
-		client:     getClientService(parameters, logger),
-		logger:     logger,
+		client: getClientService(data, logger),
+		logger: logger,
 	}
 }
