@@ -27,11 +27,11 @@ type editRes struct {
 	Result string `json:"result"`
 }
 
-type data struct {
-	tkn     string
-	email   string
-	z       string
-	name    string
-	timeout int64
-	hour    int64
+type Data struct {
+	Tkn     string
+	Email   string
+	Z       string
+	Name    string
+	Timeout int64
+	Hour    int64
 }

@@ -3,6 +3,7 @@ package updater
 import (
 	"io"
 	"net/http"
+	"net/url"
 )
 
 /*

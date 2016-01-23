@@ -1,7 +1,6 @@
 package updater
 
 import (
-	"log"
 	"time"
 )
 

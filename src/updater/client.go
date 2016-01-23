@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net"
-	"net/http"
 	"net/url"
 	"strings"
 	"sync"
@@ -25,16 +24,16 @@ type client struct {
 
 	httpClient httpClientInterface
 	url        string
-	data       data
+	data       Data
 	logger     loggerInterface
 }
 
 func (c *client) getObjects() (ipv4, ipv6 *Object) {
 	resp, err := c.httpClient.PostForm(c.url, url.Values{
 		"a":     {"rec_load_all"},
-		"tkn":   {c.data.tkn},
-		"email": {c.data.email},
-		"z":     {c.data.z},
+		"tkn":   {c.data.Tkn},
+		"email": {c.data.Email},
+		"z":     {c.data.Z},
 	})
 
 	if err != nil {
@@ -62,14 +61,14 @@ func (c *client) getObjects() (ipv4, ipv6 *Object) {
 	}
 
 	for _, object := range rec.Response.Record.Objects {
-		if object.Type == "A" && object.Name == c.data.name {
+		if object.Type == "A" && object.Name == c.data.Name {
 			ipv4 = object
 			break
 		}
 	}
 
 	for _, object := range rec.Response.Record.Objects {
-		if object.Type == "AAAA" && object.Name == c.data.name {
+		if object.Type == "AAAA" && object.Name == c.data.Name {
 			ipv6 = object
 			break
 		}
@@ -110,33 +109,33 @@ func (c client) runOn(
 	}
 
 	b, _ := ioutil.ReadAll(resp.Body)
-	tempaddress := strings.TrimSpace(string(b))
+	respaddress := strings.TrimSpace(string(b))
 	b = nil
 
-	if net.ParseIP(tempaddress) == nil {
-		c.logger.Println(tempaddress, "is not a valid IP Address")
+	if net.ParseIP(respaddress) == nil {
+		c.logger.Println(respaddress, "is not a valid IP Address")
 		return
 	}
 
-	if tempaddress == *address {
+	if respaddress == *address {
 		return
 	}
 
 	resp, err = c.httpClient.PostForm(c.url, url.Values{
 		"a":            {"rec_edit"},
-		"z":            {c.data.z},
+		"z":            {c.data.Z},
 		"type":         {ob.Type},
 		"id":           {ob.Id},
 		"name":         {ob.Name},
-		"content":      {ob.Content},
+		"content":      {respaddress},
 		"ttl":          {ob.Ttl},
 		"service_mode": {ob.ServiceMode},
-		"email":        {c.data.email},
-		"tkn":          {c.data.tkn},
+		"email":        {c.data.Email},
+		"tkn":          {c.data.Tkn},
 	})
 
 	if err != nil {
-		c.logger.Println(cfurl, ": Timed out (", iptype, ")")
+		c.logger.Println(c.url, ": Timed out (", iptype, ")")
 		return
 	}
 
@@ -153,7 +152,7 @@ func (c client) runOn(
 		return
 	}
 
-	*address = tempaddress
+	*address = respaddress
 }
 
 func (c *client) RunOn(ob *Object) {
@@ -166,6 +165,6 @@ func (c *client) RunOn(ob *Object) {
 
 	for {
 		cs.runOn(ob, ipurl, iptype, &address)
-		time.Sleep(time.Duration(data.hour) * time.Hour)
+		time.Sleep(time.Duration(cs.data.Hour) * time.Hour)
 	}
 }
