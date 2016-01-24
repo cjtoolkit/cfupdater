@@ -158,10 +158,9 @@ func (c client) runOn(
 func (c *client) RunOn(ob *Object) {
 	c.Lock()
 	cs := *c
-	c.Unlock()
-
 	ipurl, iptype := c.getUrlAndType(ob)
 	address := strings.TrimSpace(ob.Content)
+	c.Unlock()
 
 	for {
 		cs.runOn(ob, ipurl, iptype, &address)

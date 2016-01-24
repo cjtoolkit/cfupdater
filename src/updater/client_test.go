@@ -145,4 +145,192 @@ func TestClient(t *testing.T) {
 	})
 
 	reset()
+
+	Convey("Run updater on 'A' record, but timeout while requesting current IP address", t, func() {
+		ipv4 := &Object{
+			Content: "127.0.0.1",
+			Type:    "A",
+		}
+
+		ipurl, iptype := _client.getUrlAndType(ipv4)
+
+		address := ipv4.Content
+
+		httpClient.FnGet = func(url string) (resp *http.Response, err error) {
+			So(ipurl, ShouldEqual, URL_IPV4)
+			err = fmt.Errorf("I have timed out")
+			return
+		}
+
+		(*_client).runOn(ipv4, ipurl, iptype, &address)
+
+		So(logger.Buf.String(), ShouldEqual, fmt.Sprintln(ipurl, ": Timed out"))
+	})
+
+	reset()
+
+	Convey("Run updater on 'A' record, manage to get up-to-date IP address, but it's not a valid IP address", t, func() {
+		ipv4 := &Object{
+			Content: "127.0.0.1",
+			Type:    "A",
+		}
+
+		ipurl, iptype := _client.getUrlAndType(ipv4)
+
+		address := ipv4.Content
+
+		httpClient.FnGet = func(url string) (resp *http.Response, err error) {
+			So(ipurl, ShouldEqual, URL_IPV4)
+			resp = &http.Response{Body: newReadCloser("192.168.1_0")}
+			return
+		}
+
+		(*_client).runOn(ipv4, ipurl, iptype, &address)
+
+		So(logger.Buf.String(), ShouldEqual, fmt.Sprintln("192.168.1_0", "is not a valid IP Address"))
+	})
+
+	reset()
+
+	Convey("Run updater on 'A' record, manage to get up-to-date IP address, but the current IP address is up-to-date, therefore don't need to do anything else", t, func() {
+		ipv4 := &Object{
+			Content: "127.0.0.1",
+			Type:    "A",
+		}
+
+		ipurl, iptype := _client.getUrlAndType(ipv4)
+
+		address := ipv4.Content
+
+		httpClient.FnGet = func(url string) (resp *http.Response, err error) {
+			So(ipurl, ShouldEqual, URL_IPV4)
+			resp = &http.Response{Body: newReadCloser(" 127.0.0.1 ")}
+			return
+		}
+
+		(*_client).runOn(ipv4, ipurl, iptype, &address)
+	})
+
+	reset()
+
+	Convey("Run updater on 'A' record, manage to get up-to-date IP address, the current IP address is out-of-date, but timeout while trying to update it.", t, func() {
+		ipv4 := &Object{
+			Content: "127.0.0.1",
+			Type:    "A",
+		}
+
+		ipurl, iptype := _client.getUrlAndType(ipv4)
+
+		address := ipv4.Content
+
+		httpClient.FnGet = func(url string) (resp *http.Response, err error) {
+			So(ipurl, ShouldEqual, URL_IPV4)
+			resp = &http.Response{Body: newReadCloser(" 192.168.1.1 ")}
+			return
+		}
+
+		httpClient.FnPostForm = func(url string, data url.Values) (resp *http.Response, err error) {
+			So(url, ShouldEqual, API_URL)
+			So(data.Get("a"), ShouldEqual, "rec_edit")
+			err = fmt.Errorf("Sorry, I have timed out :(")
+			return
+		}
+
+		(*_client).runOn(ipv4, ipurl, iptype, &address)
+
+		So(address, ShouldEqual, "127.0.0.1")
+		So(logger.Buf.String(), ShouldEqual, fmt.Sprintln(API_URL, ": Timed out (", iptype, ")"))
+	})
+
+	reset()
+
+	Convey("Run updater on 'A' record, manage to get up-to-date IP address, the current IP address is out-of-date, got a response while updating IP, but JSON Decoder failed", t, func() {
+		ipv4 := &Object{
+			Content: "127.0.0.1",
+			Type:    "A",
+		}
+
+		ipurl, iptype := _client.getUrlAndType(ipv4)
+
+		address := ipv4.Content
+
+		httpClient.FnGet = func(url string) (resp *http.Response, err error) {
+			So(ipurl, ShouldEqual, URL_IPV4)
+			resp = &http.Response{Body: newReadCloser(" 192.168.1.1 ")}
+			return
+		}
+
+		httpClient.FnPostForm = func(url string, data url.Values) (resp *http.Response, err error) {
+			So(url, ShouldEqual, API_URL)
+			So(data.Get("a"), ShouldEqual, "rec_edit")
+			resp = &http.Response{Body: newReadCloser(shoddyJson)}
+			return
+		}
+
+		(*_client).runOn(ipv4, ipurl, iptype, &address)
+
+		So(address, ShouldEqual, "127.0.0.1")
+		So(logger.Buf.String(), ShouldEqual, fmt.Sprintln("CfUpdater json decoder failed (", iptype, ")"))
+	})
+
+	reset()
+
+	Convey("Run updater on 'A' record, manage to get up-to-date IP address, the current IP address is out-of-date, got a response while updating IP, but the result was unsuccessful", t, func() {
+		ipv4 := &Object{
+			Content: "127.0.0.1",
+			Type:    "A",
+		}
+
+		ipurl, iptype := _client.getUrlAndType(ipv4)
+
+		address := ipv4.Content
+
+		httpClient.FnGet = func(url string) (resp *http.Response, err error) {
+			So(ipurl, ShouldEqual, URL_IPV4)
+			resp = &http.Response{Body: newReadCloser(" 192.168.1.1 ")}
+			return
+		}
+
+		httpClient.FnPostForm = func(url string, data url.Values) (resp *http.Response, err error) {
+			So(url, ShouldEqual, API_URL)
+			So(data.Get("a"), ShouldEqual, "rec_edit")
+			resp = &http.Response{Body: newReadCloser(editResFailer)}
+			return
+		}
+
+		(*_client).runOn(ipv4, ipurl, iptype, &address)
+
+		So(address, ShouldEqual, "127.0.0.1")
+		So(logger.Buf.String(), ShouldEqual, fmt.Sprintln("CfUpdater failed to update IP address (", iptype, ")"))
+	})
+
+	reset()
+
+	Convey("Run updater on 'A' record, manage to get up-to-date IP address, the current IP address is out-of-date, got a response while updating IP, but the result was successful", t, func() {
+		ipv4 := &Object{
+			Content: "127.0.0.1",
+			Type:    "A",
+		}
+
+		ipurl, iptype := _client.getUrlAndType(ipv4)
+
+		address := ipv4.Content
+
+		httpClient.FnGet = func(url string) (resp *http.Response, err error) {
+			So(ipurl, ShouldEqual, URL_IPV4)
+			resp = &http.Response{Body: newReadCloser(" 192.168.1.1 ")}
+			return
+		}
+
+		httpClient.FnPostForm = func(url string, data url.Values) (resp *http.Response, err error) {
+			So(url, ShouldEqual, API_URL)
+			So(data.Get("a"), ShouldEqual, "rec_edit")
+			resp = &http.Response{Body: newReadCloser(editResSuccess)}
+			return
+		}
+
+		(*_client).runOn(ipv4, ipurl, iptype, &address)
+
+		So(address, ShouldEqual, "192.168.1.1")
+	})
 }
