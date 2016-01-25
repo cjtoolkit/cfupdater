@@ -13,18 +13,20 @@ go get github.com/cjtoolkit/cfupdater
 ~~~
 CJToolkit CfUpdater Usage:
 
-        Mandatory Options:
+        cf:updater [options] tkn email z name [timeout hour]
 
-                -tkn            CloudFlare API Key
-                -email          CloudFlare Email
-                -z              CloudFlare Zone
-                -name           Search Domain Name in Records
+        Mandatory Argument:
+             email          CloudFlare Email (type: *string)
+             name           Search Domain Name in Records (type: *string)
+             tkn            CloudFlare API Key (type: *string)
+             z              CloudFlare Zone (type: *string)
 
-        Other Options:
+        Optional Argument:
+             hour           Run Every x Hours (2 Hours by Default) (type: *int64)
+             timeout        Specify API Timeout in Second (Default: 30) (type: *int64)
 
-                -hour           Run Every x Hours (2 Hours by Default)
-                -timeout        Specify API Timeout in Second (Default: 30)
-                -debug          Enable Debug Mode (Disabled by Default)
+        Options:
+             --debug        Enable Debug Mode (Disabled by Default)
 ~~~
 
 ## Example
@@ -32,9 +34,9 @@ CJToolkit CfUpdater Usage:
 ~~~ sh
 #!/bin/zsh
 
-cfupdater \
-	-tkn	"API Key Here" \
-	-email	"email@exmaple.com" \
-	-z		"example.com" \
-	-name	"example.com"
+cfupdater cf:updater \
+	"API Key Here" \
+	"email@exmaple.com" \
+	"example.com" \
+	"example.com"
 ~~~

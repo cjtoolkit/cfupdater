@@ -1,9 +1,13 @@
 package main
 
 import (
-	"github.com/cjtoolkit/cfupdater/app"
+	_ "github.com/cjtoolkit/cfupdater/src"
+	"github.com/cjtoolkit/cli"
+	"log"
+	"os"
 )
 
 func main() {
-	app.Exec()
+	logger := log.New(os.Stdout, "Cf:Updater", log.LstdFlags)
+	cli.Start(logger, "CfUpdater")
 }

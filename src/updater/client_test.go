@@ -50,10 +50,10 @@ func TestClient(t *testing.T) {
 
 	reset()
 
-	Convey("In 'getObjects' we got a timeout from 'httpClient'", t, func() {
+	Convey("In 'getObjects' we got a timeout (an error) from 'httpClient'", t, func() {
 		httpClient.FnPostForm = func(url string, data url.Values) (resp *http.Response, err error) {
 			So(url, ShouldEqual, API_URL)
-			So(data.Get("a"), ShouldEqual, "rec_load_all")
+			So(data.Get("a"), ShouldEqual, REC_LOAD_ALL)
 			err = fmt.Errorf("I have timedout, sorry")
 			return
 		}
@@ -62,7 +62,7 @@ func TestClient(t *testing.T) {
 		So(ipv4, ShouldBeNil)
 		So(ipv6, ShouldBeNil)
 
-		So(logger.Buf.String(), ShouldEqual, fmt.Sprintln("API Timeout"))
+		So(logger.Buf.String(), ShouldEqual, fmt.Sprintln("Http Client Error:", "I have timedout, sorry"))
 	})
 
 	reset()
@@ -70,7 +70,7 @@ func TestClient(t *testing.T) {
 	Convey("In 'getObjects' we got a response from 'httpClient' but json decoder failed", t, func() {
 		httpClient.FnPostForm = func(url string, data url.Values) (resp *http.Response, err error) {
 			So(url, ShouldEqual, API_URL)
-			So(data.Get("a"), ShouldEqual, "rec_load_all")
+			So(data.Get("a"), ShouldEqual, REC_LOAD_ALL)
 			resp = &http.Response{Body: newReadCloser(shoddyJson)}
 			return
 		}
@@ -87,7 +87,7 @@ func TestClient(t *testing.T) {
 	Convey("In 'getObjects' we got a response from 'httpClient', json decoder went well, but the result was a fail", t, func() {
 		httpClient.FnPostForm = func(url string, data url.Values) (resp *http.Response, err error) {
 			So(url, ShouldEqual, API_URL)
-			So(data.Get("a"), ShouldEqual, "rec_load_all")
+			So(data.Get("a"), ShouldEqual, REC_LOAD_ALL)
 			resp = &http.Response{Body: newReadCloser(recLoadAllFailer)}
 			return
 		}
@@ -104,7 +104,7 @@ func TestClient(t *testing.T) {
 	Convey("In 'getObjects' we got a response from 'httpClient', json decoder went well, the result were great, we manage to obtain both 'A' and 'AAAA' records", t, func() {
 		httpClient.FnPostForm = func(url string, data url.Values) (resp *http.Response, err error) {
 			So(url, ShouldEqual, API_URL)
-			So(data.Get("a"), ShouldEqual, "rec_load_all")
+			So(data.Get("a"), ShouldEqual, REC_LOAD_ALL)
 			resp = &http.Response{Body: newReadCloser(recLoadAllSuccess)}
 			return
 		}
@@ -119,7 +119,7 @@ func TestClient(t *testing.T) {
 	Convey("In 'getObjects' we got a response from 'httpClient', json decoder went well, the result were great, we manage to obtain both 'A' record", t, func() {
 		httpClient.FnPostForm = func(url string, data url.Values) (resp *http.Response, err error) {
 			So(url, ShouldEqual, API_URL)
-			So(data.Get("a"), ShouldEqual, "rec_load_all")
+			So(data.Get("a"), ShouldEqual, REC_LOAD_ALL)
 			resp = &http.Response{Body: newReadCloser(recLoadAllSuccessIpV4)}
 			return
 		}
@@ -134,7 +134,7 @@ func TestClient(t *testing.T) {
 	Convey("In 'getObjects' we got a response from 'httpClient', json decoder went well, the result were great, we manage to obtain both 'AAAA' record", t, func() {
 		httpClient.FnPostForm = func(url string, data url.Values) (resp *http.Response, err error) {
 			So(url, ShouldEqual, API_URL)
-			So(data.Get("a"), ShouldEqual, "rec_load_all")
+			So(data.Get("a"), ShouldEqual, REC_LOAD_ALL)
 			resp = &http.Response{Body: newReadCloser(recLoadAllSuccessIpV6)}
 			return
 		}
@@ -164,7 +164,7 @@ func TestClient(t *testing.T) {
 
 		(*_client).runOn(ipv4, ipurl, iptype, &address)
 
-		So(logger.Buf.String(), ShouldEqual, fmt.Sprintln(ipurl, ": Timed out"))
+		So(logger.Buf.String(), ShouldEqual, fmt.Sprintln(ipurl, ": Http Error:", "I have timed out"))
 	})
 
 	reset()
@@ -213,7 +213,7 @@ func TestClient(t *testing.T) {
 
 	reset()
 
-	Convey("Run updater on 'A' record, manage to get up-to-date IP address, the current IP address is out-of-date, but timeout while trying to update it.", t, func() {
+	Convey("Run updater on 'A' record, manage to get up-to-date IP address, the current IP address is out-of-date, but timedout while trying to update it.", t, func() {
 		ipv4 := &Object{
 			Content: "127.0.0.1",
 			Type:    "A",
@@ -231,7 +231,7 @@ func TestClient(t *testing.T) {
 
 		httpClient.FnPostForm = func(url string, data url.Values) (resp *http.Response, err error) {
 			So(url, ShouldEqual, API_URL)
-			So(data.Get("a"), ShouldEqual, "rec_edit")
+			So(data.Get("a"), ShouldEqual, REC_EDIT)
 			err = fmt.Errorf("Sorry, I have timed out :(")
 			return
 		}
@@ -239,7 +239,7 @@ func TestClient(t *testing.T) {
 		(*_client).runOn(ipv4, ipurl, iptype, &address)
 
 		So(address, ShouldEqual, "127.0.0.1")
-		So(logger.Buf.String(), ShouldEqual, fmt.Sprintln(API_URL, ": Timed out (", iptype, ")"))
+		So(logger.Buf.String(), ShouldEqual, fmt.Sprintln(API_URL, iptype, ": Http Error:", "Sorry, I have timed out :("))
 	})
 
 	reset()
@@ -262,7 +262,7 @@ func TestClient(t *testing.T) {
 
 		httpClient.FnPostForm = func(url string, data url.Values) (resp *http.Response, err error) {
 			So(url, ShouldEqual, API_URL)
-			So(data.Get("a"), ShouldEqual, "rec_edit")
+			So(data.Get("a"), ShouldEqual, REC_EDIT)
 			resp = &http.Response{Body: newReadCloser(shoddyJson)}
 			return
 		}
@@ -293,7 +293,7 @@ func TestClient(t *testing.T) {
 
 		httpClient.FnPostForm = func(url string, data url.Values) (resp *http.Response, err error) {
 			So(url, ShouldEqual, API_URL)
-			So(data.Get("a"), ShouldEqual, "rec_edit")
+			So(data.Get("a"), ShouldEqual, REC_EDIT)
 			resp = &http.Response{Body: newReadCloser(editResFailer)}
 			return
 		}
@@ -306,7 +306,7 @@ func TestClient(t *testing.T) {
 
 	reset()
 
-	Convey("Run updater on 'A' record, manage to get up-to-date IP address, the current IP address is out-of-date, got a response while updating IP, but the result was successful", t, func() {
+	Convey("Run updater on 'A' record, manage to get up-to-date IP address, the current IP address is out-of-date, got a response while updating IP, the result was successful", t, func() {
 		ipv4 := &Object{
 			Content: "127.0.0.1",
 			Type:    "A",
@@ -324,7 +324,7 @@ func TestClient(t *testing.T) {
 
 		httpClient.FnPostForm = func(url string, data url.Values) (resp *http.Response, err error) {
 			So(url, ShouldEqual, API_URL)
-			So(data.Get("a"), ShouldEqual, "rec_edit")
+			So(data.Get("a"), ShouldEqual, REC_EDIT)
 			resp = &http.Response{Body: newReadCloser(editResSuccess)}
 			return
 		}

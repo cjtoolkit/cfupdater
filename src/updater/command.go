@@ -14,7 +14,7 @@ type command struct {
 func (c *command) CommandSetup(com *cli.Command) {
 	c.data = getDataStorage()
 
-	com.Init("cf:update", "Cloudflare IP Updater")
+	com.Init("cf:updater", "Cloudflare IP Updater")
 
 	com.AddMandatoryArgument("tkn", "CloudFlare API Key", &c.data.Tkn)
 	com.AddMandatoryArgument("email", "CloudFlare Email", &c.data.Email)
@@ -28,6 +28,8 @@ func (c *command) CommandSetup(com *cli.Command) {
 }
 
 func (c *command) CommandExec(l *log.Logger) {
+	l.Println("Running CfUpdater Daemon")
+
 	if !c.debug {
 		l.SetOutput(ioutil.Discard)
 	}

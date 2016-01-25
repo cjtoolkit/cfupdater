@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net"
-	"net/url"
 	"strings"
 	"sync"
 	"time"
@@ -22,22 +21,18 @@ Implements:
 type client struct {
 	sync.Mutex
 
-	httpClient httpClientInterface
-	url        string
-	data       Data
-	logger     loggerInterface
+	httpClient  httpClientInterface
+	url         string
+	data        Data
+	logger      loggerInterface
+	transformer transformer
 }
 
 func (c *client) getObjects() (ipv4, ipv6 *Object) {
-	resp, err := c.httpClient.PostForm(c.url, url.Values{
-		"a":     {"rec_load_all"},
-		"tkn":   {c.data.Tkn},
-		"email": {c.data.Email},
-		"z":     {c.data.Z},
-	})
+	resp, err := c.httpClient.PostForm(c.url, c.transformer.getRecLoadAllValues(c.data))
 
 	if err != nil {
-		c.logger.Println("API Timeout")
+		c.logger.Println("Http Client Error:", err.Error())
 		return
 	}
 
@@ -60,16 +55,16 @@ func (c *client) getObjects() (ipv4, ipv6 *Object) {
 		return
 	}
 
-	for _, object := range rec.Response.Record.Objects {
-		if object.Type == "A" && object.Name == c.data.Name {
-			ipv4 = object
-			break
-		}
-	}
+	ipv4 = c.filterObject(rec, "A")
+	ipv6 = c.filterObject(rec, "AAAA")
 
+	return
+}
+
+func (c *client) filterObject(rec *recloadall, recType string) (ob *Object) {
 	for _, object := range rec.Response.Record.Objects {
-		if object.Type == "AAAA" && object.Name == c.data.Name {
-			ipv6 = object
+		if object.Type == recType && object.Name == c.data.Name {
+			ob = object
 			break
 		}
 	}
@@ -104,7 +99,7 @@ func (c client) runOn(
 ) {
 	resp, err := c.httpClient.Get(ipurl)
 	if err != nil {
-		c.logger.Println(ipurl, ": Timed out")
+		c.logger.Println(ipurl, ": Http Error:", err.Error())
 		return
 	}
 
@@ -121,21 +116,10 @@ func (c client) runOn(
 		return
 	}
 
-	resp, err = c.httpClient.PostForm(c.url, url.Values{
-		"a":            {"rec_edit"},
-		"z":            {c.data.Z},
-		"type":         {ob.Type},
-		"id":           {ob.Id},
-		"name":         {ob.Name},
-		"content":      {respaddress},
-		"ttl":          {ob.Ttl},
-		"service_mode": {ob.ServiceMode},
-		"email":        {c.data.Email},
-		"tkn":          {c.data.Tkn},
-	})
+	resp, err = c.httpClient.PostForm(c.url, c.transformer.getRecEditValues(c.data, ob, respaddress))
 
 	if err != nil {
-		c.logger.Println(c.url, ": Timed out (", iptype, ")")
+		c.logger.Println(c.url, iptype, ": Http Error:", err.Error())
 		return
 	}
 
