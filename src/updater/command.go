@@ -6,6 +6,10 @@ import (
 	"log"
 )
 
+/*
+Implements:
+	CommandInterface in "github.com/cjtoolkit/cli"
+*/
 type command struct {
 	data  *Data
 	debug bool
