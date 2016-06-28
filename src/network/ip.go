@@ -50,5 +50,7 @@ func (ip *Ip) FetchIpAddress() (address string, updated bool) {
 
 	address = strings.TrimSpace(string(addressBytes))
 	updated = address != currentAddress
+
+	ip.currentAddress = address
 	return
 }
