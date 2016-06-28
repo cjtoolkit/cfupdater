@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	ipv4 = "https://ipv4.icanhazip.com/"
-	ipv6 = "https://ipv6.icanhazip.com/"
+	ipv4_url = "https://ipv4.icanhazip.com/"
+	ipv6_url = "https://ipv6.icanhazip.com/"
 
 	http_client_timeout time.Duration = 5 * time.Second
 )
@@ -31,11 +31,11 @@ func newIp(ipLookupUrl string) *Ip {
 }
 
 func NewIpV4() *Ip {
-	return newIp(ipv4)
+	return newIp(ipv4_url)
 }
 
 func NewIpV6() *Ip {
-	return newIp(ipv6)
+	return newIp(ipv6_url)
 }
 
 func (ip *Ip) FetchIpAddress() (address string, updated bool) {
