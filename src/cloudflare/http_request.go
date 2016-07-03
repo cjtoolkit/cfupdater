@@ -27,7 +27,7 @@ func (_ httpRequest) newHttpRequest(method, rawUrl string) *http.Request {
 	return &http.Request{
 		Method: method,
 		URL:    parsedUrl,
-		Header: &http.Header{
+		Header: http.Header{
 			authEmail:   {config.Email},
 			authKey:     {config.ApiKey},
 			contentType: {contentTypeValue},

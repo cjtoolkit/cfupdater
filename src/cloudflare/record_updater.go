@@ -10,6 +10,14 @@ import (
 	"encoding/json"
 )
 
+type bufCloser struct {
+	*bytes.Buffer
+}
+
+func (b bufCloser) Close() error {
+	return nil
+}
+
 type RecordUpdater struct {
 	client    iface.HttpClientInterface
 	ip        *network.Ip
@@ -48,10 +56,12 @@ func (rU RecordUpdater) RunUpdater() {
 
 	rU.dnsRecord.Content = address
 	buf := &bytes.Buffer{}
+	defer buf.Reset()
+
 	json.NewEncoder(buf).Encode(*rU.dnsRecord)
 
 	req := rU.httpRequest.newHttpRequest(updateDnsRecordMethod, rU.url)
-	req.Body = buf
+	req.Body = bufCloser{buf}
 
 	rU.client.Do(req)
 }
