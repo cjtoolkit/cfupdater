@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/cjtoolkit/cfupdater/src/config"
 	"github.com/cjtoolkit/cfupdater/src/iface"
+	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -50,6 +51,8 @@ func (d DnsRecordsGetters) GetRecords() (records []DnsRecord, err error) {
 		return
 	}
 
+	log.Println(fmt.Printf("Zone Id: %s", zones.Result[0].Id))
+
 	dnsUrl := urlSearchReplace(listDnsRecords, map[string]string{
 		zoneIdentifier: zones.Result[0].Id,
 	})
@@ -66,6 +69,7 @@ func (d DnsRecordsGetters) GetRecords() (records []DnsRecord, err error) {
 			err = json.NewDecoder(resp.Body).Decode(dnss)
 			if nil == err {
 				records = append(records, dnss.Result...)
+				log.Println(fmt.Printf("'%s' record has been found", _type))
 			}
 		}
 	}

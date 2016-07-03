@@ -1,11 +1,13 @@
 package network
 
 import (
+	"fmt"
 	"github.com/cjtoolkit/cfupdater/src/iface"
-	"net/http"
-	"time"
 	"io/ioutil"
+	"log"
+	"net/http"
 	"strings"
+	"time"
 )
 
 const (
@@ -44,5 +46,8 @@ func (ip *Ip) FetchIpAddress() (address string, updated bool) {
 	updated = address != currentAddress
 
 	ip.currentAddress = address
+
+	log.Println(fmt.Printf("URL: %s, IP: %s, Updated %t", ip.ipLookupUrl, ip.currentAddress, updated))
+
 	return
 }

@@ -1,13 +1,15 @@
 package cloudflare
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"github.com/cjtoolkit/cfupdater/src/config"
 	"github.com/cjtoolkit/cfupdater/src/iface"
 	"github.com/cjtoolkit/cfupdater/src/network"
+	"log"
 	"net/http"
 	"time"
-	"bytes"
-	"encoding/json"
 )
 
 type bufCloser struct {
@@ -19,10 +21,10 @@ func (b bufCloser) Close() error {
 }
 
 type RecordUpdater struct {
-	client    iface.HttpClientInterface
-	ip        *network.Ip
-	dnsRecord *DnsRecord
-	url       string
+	client      iface.HttpClientInterface
+	ip          *network.Ip
+	dnsRecord   *DnsRecord
+	url         string
 	httpRequest httpRequest
 }
 
@@ -53,6 +55,8 @@ func (rU RecordUpdater) RunUpdater() {
 	if !updated {
 		return
 	}
+
+	log.Println(fmt.Printf("Submitting updated IP address '%s'", address))
 
 	rU.dnsRecord.Content = address
 	buf := &bytes.Buffer{}
