@@ -17,7 +17,6 @@ type Config struct {
 	// Optional
 	Hour    int64 `json:"hour,omitempty"`
 	Timeout int64 `json:"timeout,omitempty"`
-	Debug   bool  `json:"debug,omitempty"`
 }
 
 var config = &Config{
