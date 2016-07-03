@@ -51,7 +51,7 @@ func (d DnsRecordsGetters) GetRecords() (records []DnsRecord, err error) {
 		return
 	}
 
-	log.Println(fmt.Printf("Zone Id: %s", zones.Result[0].Id))
+	log.Println(fmt.Sprintf("Zone Id: %s ", zones.Result[0].Id))
 
 	dnsUrl := urlSearchReplace(listDnsRecords, map[string]string{
 		zoneIdentifier: zones.Result[0].Id,
@@ -67,9 +67,9 @@ func (d DnsRecordsGetters) GetRecords() (records []DnsRecord, err error) {
 		if nil == err {
 			dnss := &dnsRecordBase{}
 			err = json.NewDecoder(resp.Body).Decode(dnss)
-			if nil == err {
+			if nil == err && 0 != len(dnss.Result) {
 				records = append(records, dnss.Result...)
-				log.Println(fmt.Printf("'%s' record has been found ", _type))
+				log.Println(fmt.Sprintf("'%s' record has been found, Id: %s ", _type, dnss.Result[0].Id))
 			}
 		}
 	}

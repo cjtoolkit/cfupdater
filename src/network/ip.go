@@ -47,7 +47,7 @@ func (ip *Ip) FetchIpAddress() (address string, updated bool) {
 
 	ip.currentAddress = address
 
-	log.Println(fmt.Printf("URL: %s, IP: %s, Updated %t ", ip.ipLookupUrl, ip.currentAddress, updated))
+	log.Println(fmt.Sprintf("URL: %s, IP: %s, Updated %t ", ip.ipLookupUrl, ip.currentAddress, updated))
 
 	return
 }
