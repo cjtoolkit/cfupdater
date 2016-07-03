@@ -26,7 +26,7 @@ func main() {
 		updaters = append(updaters, cloudflare.NewRecordUpdater(record))
 	}
 
-	hour := time.Duration(config.GetConfig().Hour) * time.Second
+	hour := time.Duration(config.GetConfig().Hour) * time.Hour
 
 	for {
 		for _, updater := range updaters {
