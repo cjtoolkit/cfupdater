@@ -15,9 +15,9 @@ const (
 	listDnsRecords  = listZones + "/" + zoneIdentifier + "/dns_records"
 	updateDnsRecord = listDnsRecords + "/" + identifier
 
-	listZonesMethod      = http.MethodGet
-	listDnsRecordsMethod = http.MethodGet
-	updateDnsRecord      = http.MethodPut
+	listZonesMethod       = http.MethodGet
+	listDnsRecordsMethod  = http.MethodGet
+	updateDnsRecordMethod = http.MethodPut
 )
 
 func urlSearchReplace(rawUrl string, urlData map[string]string) string {
