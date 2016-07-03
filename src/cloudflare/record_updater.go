@@ -56,7 +56,7 @@ func (rU RecordUpdater) RunUpdater() {
 		return
 	}
 
-	log.Println(fmt.Printf("Submitting updated IP address '%s'", address))
+	log.Println(fmt.Printf("Submitting updated IP address '%s' ", address))
 
 	rU.dnsRecord.Content = address
 	buf := &bytes.Buffer{}
