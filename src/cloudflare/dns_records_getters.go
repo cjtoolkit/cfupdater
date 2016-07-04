@@ -54,7 +54,7 @@ func (d DnsRecordsGetters) GetRecords() (records []DnsRecord, err error) {
 		return
 	}
 
-	d.log.Println(fmt.Sprintf("Zone Id: %s ", zones.Result[0].Id))
+	d.log.Println(fmt.Sprintf("Zone Id: %s", zones.Result[0].Id))
 
 	dnsUrl := urlSearchReplace(listDnsRecords, map[string]string{
 		zoneIdentifier: zones.Result[0].Id,
