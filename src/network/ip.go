@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
-	"os"
 )
 
 const (
@@ -31,7 +31,7 @@ func NewIp(ipLookupUrl string) *Ip {
 			Timeout: http_client_timeout,
 		},
 		ipLookupUrl: ipLookupUrl,
-		log: log.New(os.Stdout, "IP: ", log.LstdFlags),
+		log:         log.New(os.Stdout, "IP: ", log.LstdFlags),
 	}
 }
 

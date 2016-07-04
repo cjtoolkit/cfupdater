@@ -1,9 +1,9 @@
 package main
 
 import (
-	"log"
-	"github.com/cjtoolkit/cfupdater/src/config"
 	"github.com/cjtoolkit/cfupdater/src/cloudflare"
+	"github.com/cjtoolkit/cfupdater/src/config"
+	"log"
 	"time"
 )
 

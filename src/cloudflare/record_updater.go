@@ -9,8 +9,8 @@ import (
 	"github.com/cjtoolkit/cfupdater/src/network"
 	"log"
 	"net/http"
-	"time"
 	"os"
+	"time"
 )
 
 type bufCloser struct {
@@ -49,7 +49,7 @@ func NewRecordUpdater(dnsRecord DnsRecord) RecordUpdater {
 			identifier:     dnsRecord.Id,
 		}),
 		httpRequest: httpRequest{},
-		log: log.New(os.Stdout, "RU: ", log.LstdFlags),
+		log:         log.New(os.Stdout, "RU: ", log.LstdFlags),
 	}
 }
 

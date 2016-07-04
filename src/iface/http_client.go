@@ -1,8 +1,8 @@
 package iface
 
 import (
-	"net/http"
 	"io"
+	"net/http"
 	"net/url"
 )
 
