@@ -31,6 +31,7 @@ func InitConfig() error {
 	if nil != err {
 		return err
 	}
+	defer file.Close()
 
 	return json.NewDecoder(file).Decode(config)
 }
