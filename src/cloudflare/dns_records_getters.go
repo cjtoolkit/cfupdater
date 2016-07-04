@@ -50,7 +50,7 @@ func (d DnsRecordsGetters) GetRecords() (records []DnsRecord, err error) {
 	if nil != err {
 		return
 	} else if !zones.Success {
-		err = fmt.Errorf("Zone has not been found. ")
+		err = fmt.Errorf("Zone has not been found.")
 		return
 	}
 
@@ -72,13 +72,13 @@ func (d DnsRecordsGetters) GetRecords() (records []DnsRecord, err error) {
 			err = json.NewDecoder(resp.Body).Decode(dnss)
 			if nil == err && 0 != len(dnss.Result) {
 				records = append(records, dnss.Result...)
-				d.log.Println(fmt.Sprintf("'%s' record has been found, Id: %s ", _type, dnss.Result[0].Id))
+				d.log.Println(fmt.Sprintf("'%s' record has been found, Id: %s", _type, dnss.Result[0].Id))
 			}
 		}
 	}
 
 	if 0 == len(records) {
-		err = fmt.Errorf("Could not find dns records for '%s' ", d.name)
+		err = fmt.Errorf("Could not find dns records for '%s'", d.name)
 	}
 
 	return
