@@ -29,7 +29,8 @@ func NewDnsRecordsGetters() DnsRecordsGetters {
 		client: &http.Client{
 			Timeout: time.Duration(config.Timeout) * time.Second,
 		},
-		log: log.New(os.Stdout, "DRG:", log.LstdFlags),
+		httpRequest: httpRequest{},
+		log: log.New(os.Stdout, "DRG: ", log.LstdFlags),
 	}
 }
 
