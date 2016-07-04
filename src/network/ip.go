@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"os"
 )
 
 const (
@@ -21,6 +22,7 @@ type Ip struct {
 	currentAddress string
 	client         iface.HttpClientInterface
 	ipLookupUrl    string
+	log            iface.LoggerInterface
 }
 
 func NewIp(ipLookupUrl string) *Ip {
@@ -29,6 +31,7 @@ func NewIp(ipLookupUrl string) *Ip {
 			Timeout: http_client_timeout,
 		},
 		ipLookupUrl: ipLookupUrl,
+		log: log.New(os.Stdout, "IP: ", log.LstdFlags),
 	}
 }
 
@@ -47,7 +50,7 @@ func (ip *Ip) FetchIpAddress() (address string, updated bool) {
 
 	ip.currentAddress = address
 
-	log.Println(fmt.Sprintf("URL: %s, IP: %s, Updated %t ", ip.ipLookupUrl, ip.currentAddress, updated))
+	ip.log.Println(fmt.Sprintf("URL: %s, IP: %s, Updated %t", ip.ipLookupUrl, ip.currentAddress, updated))
 
 	return
 }

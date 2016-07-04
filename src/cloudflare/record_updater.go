@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"os"
 )
 
 type bufCloser struct {
@@ -25,7 +26,8 @@ type RecordUpdater struct {
 	ip          *network.Ip
 	dnsRecord   *DnsRecord
 	url         string
-	httpRequest httpRequest
+	httpRequest httpRequestInterface
+	log         iface.LoggerInterface
 }
 
 var ipUrlsLookup = map[string]string{
@@ -47,6 +49,7 @@ func NewRecordUpdater(dnsRecord DnsRecord) RecordUpdater {
 			identifier:     dnsRecord.Id,
 		}),
 		httpRequest: httpRequest{},
+		log: log.New(os.Stdout, "RU: ", log.LstdFlags),
 	}
 }
 
@@ -56,7 +59,7 @@ func (rU RecordUpdater) RunUpdater() {
 		return
 	}
 
-	log.Println(fmt.Sprintf("Submitting updated IP address '%s' ", address))
+	rU.log.Println(fmt.Sprintf("Submitting updated IP address '%s'", address))
 
 	rU.dnsRecord.Content = address
 	buf := &bytes.Buffer{}

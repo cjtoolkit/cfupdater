@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 )
 
@@ -15,7 +16,8 @@ type DnsRecordsGetters struct {
 	zone        string
 	name        string
 	client      iface.HttpClientInterface
-	httpRequest httpRequest
+	httpRequest httpRequestInterface
+	log         iface.LoggerInterface
 }
 
 func NewDnsRecordsGetters() DnsRecordsGetters {
@@ -27,6 +29,7 @@ func NewDnsRecordsGetters() DnsRecordsGetters {
 		client: &http.Client{
 			Timeout: time.Duration(config.Timeout) * time.Second,
 		},
+		log: log.New(os.Stdout, "DRG:", log.LstdFlags),
 	}
 }
 
@@ -51,7 +54,7 @@ func (d DnsRecordsGetters) GetRecords() (records []DnsRecord, err error) {
 		return
 	}
 
-	log.Println(fmt.Sprintf("Zone Id: %s ", zones.Result[0].Id))
+	d.log.Println(fmt.Sprintf("Zone Id: %s ", zones.Result[0].Id))
 
 	dnsUrl := urlSearchReplace(listDnsRecords, map[string]string{
 		zoneIdentifier: zones.Result[0].Id,
@@ -69,7 +72,7 @@ func (d DnsRecordsGetters) GetRecords() (records []DnsRecord, err error) {
 			err = json.NewDecoder(resp.Body).Decode(dnss)
 			if nil == err && 0 != len(dnss.Result) {
 				records = append(records, dnss.Result...)
-				log.Println(fmt.Sprintf("'%s' record has been found, Id: %s ", _type, dnss.Result[0].Id))
+				d.log.Println(fmt.Sprintf("'%s' record has been found, Id: %s ", _type, dnss.Result[0].Id))
 			}
 		}
 	}
