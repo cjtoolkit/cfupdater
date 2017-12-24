@@ -15,7 +15,7 @@ type Config struct {
 	Name   string `json:"name"`
 
 	// Optional
-	Minute  int64 `json:"hour,omitempty"`
+	Minute  int64 `json:"minute,omitempty"`
 	Timeout int64 `json:"timeout,omitempty"`
 }
 
