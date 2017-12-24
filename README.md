@@ -14,7 +14,7 @@ go get github.com/cjtoolkit/cfupdater
 
 ## How to Use
 
-First save the configuration to `/home/:username/.cfupdater/config.json` (example below), than compile
+First save the configuration to `/home/:username/.config/cfupdater/config.json` (example below), than compile
 and run cfupdater.
 
 ### Example config
