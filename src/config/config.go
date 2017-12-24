@@ -15,12 +15,12 @@ type Config struct {
 	Name   string `json:"name"`
 
 	// Optional
-	Hour    int64 `json:"hour,omitempty"`
+	Minute  int64 `json:"hour,omitempty"`
 	Timeout int64 `json:"timeout,omitempty"`
 }
 
 var config = &Config{
-	Hour:    2,
+	Minute:  15,
 	Timeout: 30,
 }
 

@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/cjtoolkit/cfupdater/src/cloudflare"
-	"github.com/cjtoolkit/cfupdater/src/config"
 	"log"
 	"time"
+
+	"github.com/cjtoolkit/cfupdater/src/cloudflare"
+	"github.com/cjtoolkit/cfupdater/src/config"
 )
 
 func checkError(err error) {
@@ -26,12 +27,12 @@ func main() {
 		updaters = append(updaters, cloudflare.NewRecordUpdater(record))
 	}
 
-	hour := time.Duration(config.GetConfig().Hour) * time.Hour
+	minute := time.Duration(config.GetConfig().Minute) * time.Minute
 
 	for {
 		for _, updater := range updaters {
 			updater.RunUpdater()
 		}
-		time.Sleep(hour)
+		time.Sleep(minute)
 	}
 }
