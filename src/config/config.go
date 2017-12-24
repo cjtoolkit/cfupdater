@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-const configPath = "~/.cfupdater/config.json"
+const configPath = "~/.config/cfupdater/config.json"
 
 type Config struct {
 	// Mandatory
