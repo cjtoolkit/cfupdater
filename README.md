@@ -1,3 +1,42 @@
+# This project is now archived and is no longer maintained
+
+I came to realise there are simplier ways to achieving this, just use a simple shell script
+with curl and just use cron to schedule the script.  That way you get full control of where you
+sources your WAN IP address from.
+
+```sh
+#!/bin/bash
+cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+IP=$(dig -4 +short myip.opendns.com @resolver1.opendns.com)
+if [ "$IP" != "$(cat IpAddress/Server)" ]; then
+        echo $IP > IpAddress/Server
+        curl -X PUT \
+        https://api.cloudflare.com/client/v4/zones/:zone_identifier/dns_records/:identifier \
+        -H 'Content-Type: application/json' \
+        -H 'X-Auth-Email: name@exmaple.com' \
+        -H 'X-Auth-Key: Cloudflare API Key' \
+        -H 'cache-control: no-cache' \
+        -d "{\"type\":\"A\",\"name\":\"example.com\",\"content\":\"$IP\"}"
+fi
+```
+
+[Api Doc for Updating DNS Record](https://api.cloudflare.com/#dns-records-for-a-zone-update-dns-record)
+
+If you want to distribute your IP address file across multiple systems over LAN and WAN, you might want to checkout
+https://syncthing.net/ it's awesome; and yes it's written in Go.  You could write your own version in Node, but I
+strongly advices against that. 😉
+
+Oh here a neat little trick of using the file with ssh.
+
+```sh
+$ ssh -o 'HostKeyAlias myhost' username@$(cat ~/IpAddress/Server)
+```
+
+I tested it, it's work wonderfully, make sure you add the alias to `~/.ssh/known_hosts`. 😊
+
+Cheers,
+Chris Jackson
+
 # CJToolkit CfUpdater
 
 Dynamic IP Updater for CloudFlare DNS Record
